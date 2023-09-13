@@ -12,7 +12,7 @@ namespace ANDISBANCKAPI.Controllers
     };
 
         [HttpGet(Name="GetGarantias")]
-        public IEnumerable<Garantia> Get() {
+        public IEnumerable<string> Get() {
             return garantias;
         }
     }
