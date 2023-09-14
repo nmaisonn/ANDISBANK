@@ -1,31 +1,51 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace ANDIS_II.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class LoanController : ControllerBase
 {
-    public LoanController(ILogger<WeatherForecastController> logger)
+    public LoanController(ILogger<LoanType> logger)
     {
     }
 
-    [HttpGet(Name = "api/v1/loan/type")]
-    public LoanType[] Get()
+    [HttpGet("loan/type")]
+    public IEnumerable<string> Get()
     {
-        LoanType[] arr = new LoanType[]
+        try
         {
-            new LoanType { Name = "Prestamos de autos" },
-            new LoanType { Name = "Prestamos de casas" },
-            new LoanType { Name = "Prestamos bancarios" }
-        };
+            string loanTypes = "../loanTypes.json";
 
-        return arr;
+            if (File.Exists(loanTypes))
+            {
+                string[] lines = File.ReadAllLines(loanTypes);
+
+                return lines
+            }
+            else
+            {
+                Console.WriteLine("El archivo no existe.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Ocurrió un error al leer el archivo JSON: " + ex.Message);
+        }
+    }
+
+    [HttpPost("loan/request/{userId}")]
+    public async Task<IActionResult> RequestLoan([FromRoute] int userId, [FromBody] LoanRequest loanRequest)
+    {
+        // if (resp)
+            return StatusCode(StatusCodes.Status201Created);
+        // else
+            // return StatusCode(StatusCodes.Status500InternalServerError);
     }
 }
 
 
-class LoanType
-{
-    public string Name { get; set; }
-}
+
