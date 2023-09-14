@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System;
 using System.IO;
 using Newtonsoft.Json;
+using ANDISBANCKAPI;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ANDIS_II.Controllers;
 
@@ -9,39 +12,44 @@ namespace ANDIS_II.Controllers;
 [Route("api/v1/[controller]")]
 public class LoanController : ControllerBase
 {
-    public LoanController(ILogger<LoanType> logger)
+    public LoanController()
     {
     }
 
     [HttpGet("loan/type")]
-    public IEnumerable<string> Get()
+    public string Get()
     {
         try
         {
-            string loanTypes = "../loanTypes.json";
+            string loanTypes = "./loanTypes.json";
 
-            if (File.Exists(loanTypes))
+            if (System.IO.File.Exists(loanTypes))
             {
-                string[] lines = File.ReadAllLines(loanTypes);
+                string[] lines = System.IO.File.ReadAllLines(loanTypes);
 
-                return lines
+                return string.Join("\n", lines);
             }
             else
             {
-                Console.WriteLine("El archivo no existe.");
+                string error = "El archivo no existe.";
+                Console.WriteLine(error);
+                return error;
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Ocurrió un error al leer el archivo JSON: " + ex.Message);
+            string error = "Ocurrió un error al leer el archivo JSON: " + ex.Message;
+            Console.WriteLine(error);
+            return error;
         }
     }
 
     [HttpPost("loan/request/{userId}")]
-    public async Task<IActionResult> RequestLoan([FromRoute] int userId, [FromBody] LoanRequest loanRequest)
+    public async Task<IActionResult> Post([FromRoute] int userId, [FromBody] LoanRequest loanRequest)
     {
         // if (resp)
-            return StatusCode(StatusCodes.Status201Created);
+        Console.WriteLine(loanRequest);
+        return StatusCode(StatusCodes.Status201Created);
         // else
             // return StatusCode(StatusCodes.Status500InternalServerError);
     }
