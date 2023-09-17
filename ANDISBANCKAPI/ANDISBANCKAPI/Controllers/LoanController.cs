@@ -53,6 +53,40 @@ public class LoanController : ControllerBase
         // else
             // return StatusCode(StatusCodes.Status500InternalServerError);
     }
+
+     [HttpGet("loan/{id}")]
+    public IActionResult GetLoan(int id)
+    {
+        try
+        {
+            string loans = "./loans.json";
+
+            List<Loan> loanList = new List<Loan>();
+
+            if (System.IO.File.Exists(loans))
+            {
+                string jsonLoans = System.IO.File.ReadAllText(loans);
+
+                loanList = JsonConvert.DeserializeObject<List<Loan>>(jsonLoans);
+
+                foreach (Loan loan in loanList)
+                {
+                    if (loan.Id.Equals(id))
+                    {
+                        return Ok(loan);
+                    }
+                }
+
+                return NotFound() ;
+            }
+        }
+        catch (Exception ex)
+        {
+            string error = "Ocurrió un error al leer el archivo JSON: " + ex.Message;
+            Console.WriteLine(error);
+            return NotFound();
+        }
+    }
 }
 
 
