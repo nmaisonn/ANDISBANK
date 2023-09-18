@@ -64,6 +64,46 @@ public class LoanController : ControllerBase
         return paidLoans;
     }
 
+    [HttpGet("loan/all/{userId}")]
+    public IActionResult GetAllLoans(int userId)
+    {
+        try
+        {
+            string jsonFilePath = "./loans.json";
+            if (System.IO.File.Exists(jsonFilePath))
+            {
+                string json = System.IO.File.ReadAllText(jsonFilePath);
+                List<Loan> loanList = JsonSerializer.Deserialize<List<Loan>>(json);
+
+                if (loanList != null)
+                {
+                    // Filtrar los préstamos por UserId
+                    List<Loan> resultList = loanList.Where(loan => loan.ClienteId == userId).ToList();
+                    return Ok(resultList);
+                }
+                else
+                {
+                    string error = "No se pudo deserializar el archivo JSON correctamente.";
+                    Console.WriteLine(error);
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                string error = "El archivo no existe.";
+                Console.WriteLine(error);
+                return NotFound();
+            }
+        }
+        catch (Exception ex)
+        {
+            string error = "Ocurrió un error al leer el archivo JSON: " + ex.Message;
+            Console.WriteLine(error);
+            return BadRequest(error);
+        }
+    }
+
+
     [HttpPut("api/v1/loan/completed/{id}")]
     public IActionResult UpdateLoanStatus(int id)
     {
