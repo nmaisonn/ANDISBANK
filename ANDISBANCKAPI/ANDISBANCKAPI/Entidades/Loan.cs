@@ -10,6 +10,7 @@
     {
         public int id { get; set; }
         public string Descripcion { get; set; }
+        public string Name { get; set; }
         public LoanType Tipo { get; set; }
         public double Monto { get; set; }
         public double Tasa { get; set; }

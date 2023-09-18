@@ -27,7 +27,7 @@ public class LoanController : ControllerBase
     {
         try
         {
-            string loanTypes = "./loanTypes.json";
+            string loanTypes = "./json/loanTypes.json";
 
             if (System.IO.File.Exists(loanTypes))
             {
@@ -55,7 +55,7 @@ public class LoanController : ControllerBase
     {
         try
         {
-            string loans = "./loans.json";
+            string loans = "./json/loans.json";
 
             List<Loan> loanList = new List<Loan>();
 
