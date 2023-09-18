@@ -3,6 +3,7 @@ using ANDISBANCKAPI.Entidades;
 using ANDISBANCKAPI;
 using System.Text.Json;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ANDIS_II.Controllers;
 
@@ -43,11 +44,46 @@ public class LoanController : ControllerBase
         }
         catch (Exception ex)
         {
-            string error = "OcurriÃ³ un error al leer el archivo JSON: " + ex.Message;
+            string error = "Ocurrias un error al leer el archivo JSON: " + ex.Message;
             Console.WriteLine(error);
             return error;
         }
     }
+
+    [HttpGet("loan/{id}")]
+    public IActionResult GetLoan(int id)
+    {
+        try
+        {
+            string loans = "./loans.json";
+
+            List<Loan> loanList = new List<Loan>();
+
+            if (System.IO.File.Exists(loans))
+            {
+                string jsonLoans = System.IO.File.ReadAllText(loans);
+
+                loanList = JsonConvert.DeserializeObject<List<Loan>>(jsonLoans);
+
+                foreach (Loan loan in loanList)
+                {
+                    if (loan.id.Equals(id))
+                    {
+                        return Ok(loan);
+                    }
+                }
+                return NotFound();
+            }
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            string error = "Ocurrió un error al leer el archivo JSON: " + ex.Message;
+            Console.WriteLine(error);
+            return NotFound();
+        }
+    }
+
 
     [HttpGet("api/v1/loan/paid/{userId}")]
     public Loan[] GetPaidLoans(int userId)
@@ -73,7 +109,7 @@ public class LoanController : ControllerBase
             if (System.IO.File.Exists(jsonFilePath))
             {
                 string json = System.IO.File.ReadAllText(jsonFilePath);
-                List<Loan> loanList = JsonSerializer.Deserialize<List<Loan>>(json);
+                List<Loan> loanList = System.Text.Json.JsonSerializer.Deserialize<List<Loan>>(json);
 
                 if (loanList != null)
                 {
@@ -97,7 +133,7 @@ public class LoanController : ControllerBase
         }
         catch (Exception ex)
         {
-            string error = "Ocurrió un error al leer el archivo JSON: " + ex.Message;
+            string error = "Ocurrio un error al leer el archivo JSON: " + ex.Message;
             Console.WriteLine(error);
             return BadRequest(error);
         }
@@ -121,6 +157,14 @@ public class LoanController : ControllerBase
         _loans[i] = loanToUpdate;
 
         return Ok("Estado del préstamo actualizado con éxito");
+    }
+
+    [HttpPost("loan/request/{userId}")]
+    public async Task<IActionResult> PostLoan([FromRoute] int userId, [FromBody] LoanRequest loanRequest)
+    {
+        Console.WriteLine(loanRequest);
+        return StatusCode(StatusCodes.Status201Created);
+     
     }
 }
 
