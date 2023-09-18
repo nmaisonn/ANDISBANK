@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using ANDISBANCKAPI.Entidades;
+using ANDISBANCKAPI;
+using System.Text.Json;
+using System.Collections.Generic;
 
 namespace ANDIS_II.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class LoanController : ControllerBase
 {
     private Loan[] _loans = new Loan[]
@@ -18,17 +21,32 @@ public class LoanController : ControllerBase
     {
     }
 
-    [HttpGet(Name = "api/v1/loan/type")]
-    public LoanType[] Get()
+    [HttpGet("loan/type")]
+    public string GetLoanTypes()
     {
-        LoanType[] arr = new LoanType[]
+        try
         {
-            new LoanType { Name = "Prestamos de autos" },
-            new LoanType { Name = "Prestamos de casas" },
-            new LoanType { Name = "Prestamos bancarios" }
-        };
+            string loanTypes = "./loanTypes.json";
 
-        return arr;
+            if (System.IO.File.Exists(loanTypes))
+            {
+                string[] lines = System.IO.File.ReadAllLines(loanTypes);
+
+                return string.Join("\n", lines);
+            }
+            else
+            {
+                string error = "El archivo no existe.";
+                Console.WriteLine(error);
+                return error;
+            }
+        }
+        catch (Exception ex)
+        {
+            string error = "Ocurrió un error al leer el archivo JSON: " + ex.Message;
+            Console.WriteLine(error);
+            return error;
+        }
     }
 
     [HttpGet("api/v1/loan/paid/{userId}")]
@@ -36,7 +54,6 @@ public class LoanController : ControllerBase
     {
         // Filter and return paid loans for the specified user
         Loan[] paidLoans = _loans.Where(x => x.ClienteId == userId && x.Estado == 1).ToArray();
-
         return paidLoans;
     }
 
@@ -68,7 +85,4 @@ public class LoanController : ControllerBase
 }
 
 
-//public class LoanType
-//{
-//    public string Name { get; set; }
-//}
+
