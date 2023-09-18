@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System;
-using System.IO;
-using Newtonsoft.Json;
+
+
 using ANDISBANCKAPI;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Text.Json;
+using System.Collections.Generic;
 
 namespace ANDIS_II.Controllers;
 
@@ -44,7 +43,7 @@ public class LoanController : ControllerBase
         }
     }
 
-    [HttpPost("loan/request/{userId}")]
+    /*[HttpPost("loan/request/{userId}")]
     public async Task<IActionResult> Post([FromRoute] int userId, [FromBody] LoanRequest loanRequest)
     {
         // if (resp)
@@ -52,8 +51,9 @@ public class LoanController : ControllerBase
         return StatusCode(StatusCodes.Status201Created);
         // else
             // return StatusCode(StatusCodes.Status500InternalServerError);
-    }
+    }*/
 
+    /*
      [HttpGet("loan/{id}")]
     public IActionResult GetLoan(int id)
     {
@@ -67,7 +67,7 @@ public class LoanController : ControllerBase
             {
                 string jsonLoans = System.IO.File.ReadAllText(loans);
 
-                loanList = JsonConvert.DeserializeObject<List<Loan>>(jsonLoans);
+                loanList = JsonContent.DeserializeObject<List<Loan>>(jsonLoans);
 
                 foreach (Loan loan in loanList)
                 {
@@ -86,7 +86,48 @@ public class LoanController : ControllerBase
             Console.WriteLine(error);
             return NotFound();
         }
+    }*/
+
+    [HttpGet("loan/all/{userId}")]
+    public IActionResult GetAllLoans(int userId)
+    {
+        try
+        {
+            string jsonFilePath = "./loans.json";
+
+            if (System.IO.File.Exists(jsonFilePath))
+            {
+                string json = System.IO.File.ReadAllText(jsonFilePath);
+                List<Loan> loanList = JsonSerializer.Deserialize<List<Loan>>(json);
+
+                if (loanList != null)
+                {
+                    // Filtrar los préstamos por UserId
+                    List<Loan> resultList = loanList.Where(loan => loan.UserId == userId).ToList();
+                    return Ok(resultList);
+                }
+                else
+                {
+                    string error = "No se pudo deserializar el archivo JSON correctamente.";
+                    Console.WriteLine(error);
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                string error = "El archivo no existe.";
+                Console.WriteLine(error);
+                return NotFound();
+            }
+        }
+        catch (Exception ex)
+        {
+            string error = "Ocurrió un error al leer el archivo JSON: " + ex.Message;
+            Console.WriteLine(error);
+            return BadRequest(error);
+        }
     }
+
 }
 
 
