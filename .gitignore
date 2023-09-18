@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/ANDISBANCKAPI/.vs/ProjectEvaluation
+/ANDISBANCKAPI/.vs/ANDISBANCKAPI/v17
+/ANDISBANCKAPI/.vs/ANDISBANCKAPI/DesignTimeBuild
+/ANDISBANCKAPI/.vs/ANDISBANCKAPI/FileContentIndex
+/.vs
+/ANDISBANCKAPI/.vs/ANDISBANCKAPI/config

@@ -6,7 +6,7 @@ namespace ANDIS_II.Controllers;
 [Route("[controller]")]
 public class LoanController : ControllerBase
 {
-    public LoanController(ILogger<WeatherForecastController> logger)
+    public LoanController(ILogger<LoanController> logger)
     {
     }
 
@@ -25,7 +25,7 @@ public class LoanController : ControllerBase
 }
 
 
-class LoanType
+public class LoanType
 {
     public string Name { get; set; }
 }
