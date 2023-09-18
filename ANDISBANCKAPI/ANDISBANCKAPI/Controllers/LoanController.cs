@@ -39,6 +39,32 @@ public class LoanController : ControllerBase
 
         return paidLoans;
     }
+
+    [HttpGet("api/v1/loan/active/{userId}")]
+    public Loan[] GetActiveLoans(int userId)
+    {
+        Loan[] paidLoans = _loans.Where(x => x.ClienteId == userId && x.Estado == 0).ToArray();
+        return paidLoans;
+    }
+
+    [HttpPut("api/v1/loan/completed/{id}")]
+    public IActionResult UpdateLoanStatus(int id)
+    {
+        Loan loanToUpdate = _loans.FirstOrDefault(x => x.id == id);
+        if (loanToUpdate == null)
+        {
+            return NotFound();
+        }
+
+        //Actualizo el estado
+        loanToUpdate.Estado = 1;
+
+        //Persistencia 
+        int i = Array.FindIndex(_loans, x => x.id == id);
+        _loans[i] = loanToUpdate;
+
+        return Ok("Estado del préstamo actualizado con éxito");
+    }
 }
 
 
