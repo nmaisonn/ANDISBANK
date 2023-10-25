@@ -4,6 +4,7 @@ using ANDISBANCKAPI;
 using System.Text.Json;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ANDIS_II.Controllers;
 
@@ -23,6 +24,7 @@ public class LoanController : ControllerBase
     }
 
     [HttpGet("loan/type")]
+    [EnableRateLimiting("Fixed window")]
     public string GetLoanTypes()
     {
         try
@@ -51,6 +53,7 @@ public class LoanController : ControllerBase
     }
 
     [HttpGet("loan/{id}")]
+    [EnableRateLimiting("Sliding window")]
     public IActionResult GetLoan(int id)
     {
         try
