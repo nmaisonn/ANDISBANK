@@ -17,11 +17,25 @@ builder.Services.AddRateLimiter(options => {
         options.Window = TimeSpan.FromMinutes(1);
     });
     options.AddSlidingWindowLimiter("Sliding window", options => {
-        options.AutoReplenishment = true;
-        options.PermitLimit = 100;
+        options.QueueLimit = 0;
+        options.PermitLimit = 900;
         options.SegmentsPerWindow = 10;
-        options.QueueLimit = 1000;
+        options.Window = TimeSpan.FromMinutes(1);
     });
+    options.AddTokenBucketLimiter("Token bucket", options =>
+    {
+        options.AutoReplenishment = true;
+        options.TokenLimit = 500;
+        options.ReplenishmentPeriod = TimeSpan.FromMinutes(0.5);
+        options.QueueLimit = 0;
+        options.TokensPerPeriod = 250;
+    });
+    options.AddConcurrencyLimiter("Concurrency", options =>
+    {
+        options.QueueLimit = 0;
+        options.PermitLimit = 10;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    }); 
 });
 var app = builder.Build(); 
 app.UseRateLimiter();
