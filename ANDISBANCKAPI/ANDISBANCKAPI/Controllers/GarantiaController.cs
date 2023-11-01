@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace ANDISBANCKAPI.Controllers
 {
@@ -6,15 +7,23 @@ namespace ANDISBANCKAPI.Controllers
     [Route("[controller]")]
     public class GarantiasController : ControllerBase
     {
-        private static readonly string[] garantias = new[]
+        private static string[] garantias = new[]
         {
         "inmueble","vehiculo","terreno",
     };
+        private IOutputCacheStore _cache;
+        public GarantiasController(IOutputCacheStore cache)
+        {
+            _cache = cache;
+        }
 
         [HttpGet(Name = "GetGarantias")]
+        [OutputCache(PolicyName = "AlbañilesPolicy")]
         public IEnumerable<string> GetGarantias()
         {
+            Thread.Sleep(10000);
             return garantias;
         }
+
     }
 }
