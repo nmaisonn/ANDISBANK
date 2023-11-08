@@ -1,5 +1,9 @@
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 
-
+const string serviceName = "enano";
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -55,6 +59,22 @@ builder.Services.AddOutputCache(options =>
        .Expire(TimeSpan.FromSeconds(10)));
 }
 );
+builder.Logging.AddOpenTelemetry(options =>
+{
+    options
+        .SetResourceBuilder(
+            ResourceBuilder.CreateDefault()
+                .AddService(serviceName))
+        .AddConsoleExporter();
+});
+builder.Services.AddOpenTelemetry()
+      .ConfigureResource(resource => resource.AddService(serviceName))
+      .WithTracing(tracing => tracing
+          .AddAspNetCoreInstrumentation()
+          .AddConsoleExporter())
+      .WithMetrics(metrics => metrics
+          .AddAspNetCoreInstrumentation()
+          .AddConsoleExporter());
 var app = builder.Build();
 
 app.UseOutputCache();

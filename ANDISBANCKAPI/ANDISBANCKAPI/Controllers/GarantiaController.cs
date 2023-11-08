@@ -22,6 +22,7 @@ namespace ANDISBANCKAPI.Controllers
         public IEnumerable<string> GetGarantias()
         {
             Thread.Sleep(10000);
+            throw new Exception("excepcion de prueba");
             return garantias;
         }
 
