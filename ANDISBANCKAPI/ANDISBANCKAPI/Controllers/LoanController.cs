@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.RateLimiting;
+using Serilog;
 
 namespace ANDIS_II.Controllers;
 
@@ -58,6 +59,16 @@ public class LoanController : ControllerBase
     {
         try
         {
+            if (id == 47)
+            {
+                throw new Exception("Error de prueba");
+            }
+            if (id ==13)
+            {
+                Log.Warning("El 13 es un número de mala suerte");
+                Log.Debug("Debugging", id);
+            }
+            
             string loans = "./json/loans.json";
 
             List<Loan> loanList = new List<Loan>();
@@ -82,7 +93,7 @@ public class LoanController : ControllerBase
         catch (Exception ex)
         {
             string error = "Ocurrió un error al leer el archivo JSON: " + ex.Message;
-            Console.WriteLine(error);
+            Log.Error(error);
             return NotFound();
         }
     }

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using Serilog;
+using Serilog.Sinks.SQLite;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +57,18 @@ builder.Services.AddOutputCache(options =>
        .Expire(TimeSpan.FromSeconds(10)));
 }
 );
+
+using var log = new LoggerConfiguration()
+    .MinimumLevel.Verbose()
+    .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose)
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error)
+    .WriteTo.SQLite( Environment.CurrentDirectory + @"\log.db", restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
+    .CreateLogger();
+
+Log.Logger = log;
+
+log.Information("Starting up");
+
 var app = builder.Build();
 
 app.UseOutputCache();
