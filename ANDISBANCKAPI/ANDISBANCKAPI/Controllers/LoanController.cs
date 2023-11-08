@@ -63,7 +63,7 @@ public class LoanController : ControllerBase
             {
                 throw new Exception("Error de prueba");
             }
-            if (id ==13)
+            if (id ==1)
             {
                 Log.Warning("El 13 es un número de mala suerte");
                 Log.Debug("Debugging", id);
